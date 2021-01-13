@@ -53,7 +53,7 @@ Check the kubernetes objects usage of this project [here]().
 
 **MetalLB** allows access to your Kubernetes services from outside the Kubernetes cluster. You configure access by creating a collection of rules that define which inbound connections reach which services.
 
-if you have difficulty to understand the **interaction between Kubernetes MetalLB**, please look at this [link](https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-ingress-guide-nginx-example.html).
+if you have difficulty to understand the **interaction between Kubernetes MetalLB**, please look at this [link](https://metallb.universe.tf/concepts/layer2/).
 
 ### Docker
 
