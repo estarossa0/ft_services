@@ -1,0 +1,60 @@
+# # config file version
+apiVersion: 1
+
+
+datasources:
+ - name: WORDPRESS
+   type: influxdb
+   access: proxy
+   url: http://URLIPHERE:8086
+   password: password
+   user: admin
+   database: wordpressdb
+###########################################################################
+ - name: PHPMYADMIN
+   type: influxdb
+   access: proxy
+   url: http://URLIPHERE:8086
+   password: password
+   user: admin
+   database: phpmyadmindb
+###########################################################################
+ - name: NGINX
+   type: influxdb
+   access: proxy
+   url: http://URLIPHERE:8086
+   password: password
+   user: admin
+   database: nginxdb
+###########################################################################
+ - name: MYSQL
+   type: influxdb
+   access: proxy
+   url: http://URLIPHERE:8086
+   password: password
+   user: admin
+   database: mysqldb
+###########################################################################
+ - name: InfluxDB
+   type: influxdb
+   access: proxy
+   url: http://URLIPHERE:8086
+   password: password
+   user: admin
+   database: influxdbdb
+###########################################################################
+ - name: GRAFANA
+   type: influxdb
+   access: proxy
+   url: http://URLIPHERE:8086
+   password: password
+   user: admin
+   database: grafanadb
+###########################################################################
+ - name: FTPS
+   type: influxdb
+   access: proxy
+   url: http://URLIPHERE:8086
+   user: admin
+   password: password
+   database: ftpsdb

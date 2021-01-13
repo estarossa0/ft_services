@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: mysql
+        imagePullPolicy: Never
+        image: mysql_image:latest
+        ports:
+        -   name: mysql
+            containerPort: 3306
+            hostPort: 3306
+        livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - "pgrep mysqld && pgrep telegraf"
+            initialDelaySeconds: 20
+            periodSeconds: 5
+        volumeMounts:
+          - name: mysql-pv
+            mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-pv
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+    annotations:
+      metallb.universe.tf/allow-shared-ip: shared
+    name: mysql
+spec:
+    type: ClusterIP
+    selector:
+        app: mysql
+    ports:
+        -   targetPort: 3306
+            port: 3306
+            name: mysql
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: mysql-pv
+spec:
+    storageClassName: local
+    capacity:
+        storage: 1Gi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    hostPath:
+        path: "/data/mysql"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: mysql-pvc
+spec:
+    accessModes:
+        - ReadWriteMany
+    storageClassName: local
+    resources:
+        requests:
+            storage: 1Gi

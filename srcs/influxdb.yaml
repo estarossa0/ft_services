@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+spec:
+  selector:
+    matchLabels:
+      app: influxdb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: influxdb
+        imagePullPolicy: Never
+        image: influxdb_image:latest
+        ports:
+        -   name: influxdb
+            containerPort: 8086
+            hostPort: 8086
+        volumeMounts:
+          - name: influxdb-pv
+            mountPath: /var/lib/influxdb/
+        livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - "pgrep influxd && pgrep telegraf"
+            initialDelaySeconds: 20
+            periodSeconds: 5
+      volumes:
+        - name: influxdb-pv
+          persistentVolumeClaim:
+            claimName: influxdb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+    annotations:
+      metallb.universe.tf/allow-shared-ip: shared
+    name: influxdb
+spec:
+    type: ClusterIP
+    selector:
+        app: influxdb
+    ports:
+        -   targetPort: 8086
+            port: 8086
+            name: influxdb
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: influxdb-pv
+spec:
+    storageClassName: local
+    capacity:
+        storage: 1Gi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    hostPath:
+        path: "/data/influxdb"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: influxdb-pvc
+spec:
+    accessModes:
+        - ReadWriteMany
+    storageClassName: local
+    resources:
+        requests:
+            storage: 1Gi
